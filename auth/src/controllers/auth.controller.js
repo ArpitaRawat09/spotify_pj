@@ -2,12 +2,13 @@ import userModel from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
+import { publishToQueue } from "../broker/rabbit.js";
 
 export async function registerUser(req, res) {
   const {
     email,
     password,
-    fullname: { firstName, lastName },
+    fullName: { firstName, lastName },
   } = req.body;
 
   const isUserAlreadyExist = await userModel.findOne({ email });
@@ -18,7 +19,7 @@ export async function registerUser(req, res) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = new userModel({
+  const user = await userModel.create({
     email,
     password: hashedPassword,
     fullName: { firstName, lastName },
@@ -34,6 +35,13 @@ export async function registerUser(req, res) {
     config.JWT_SECRET,
     { expiresIn: "2d" },
   );
+
+  await publishToQueue("user_registered", {
+    id: user._id,
+    email: user.email,
+    fullName: user.fullName,
+    role: user.role,
+  });
 
   res.cookie("token", token);
 
@@ -91,6 +99,13 @@ export async function googleAuthCallback(req, res) {
       firstName: user.name.givenName,
       lastName: user.name.familyName,
     },
+  });
+
+  await publishToQueue("user_registered", {
+    id: newUser._id,
+    email: newUser.email,
+    fullName: newUser.fullName,
+    role: newUser.role,
   });
 
   const token = jwt.sign(
