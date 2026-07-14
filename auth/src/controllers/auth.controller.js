@@ -24,24 +24,93 @@ export async function registerUser(req, res) {
     fullName: { firstName, lastName },
   });
 
+  await user.save();
+
   const token = jwt.sign(
     {
       id: user._id,
       role: user.role,
     },
     config.JWT_SECRET,
-    (expiresIn = "2d"),
+    { expiresIn: "2d" },
   );
 
   res.cookie("token", token);
 
   res.status(201).json({
-    message: "USer registered successfully",
+    message: "User registered successfully",
     user: {
       id: user._id,
       email: user.email,
       fullName: user.fullName,
       role: user.role,
+    },
+  });
+}
+
+export async function googleAuthCallback(req, res) {
+  const user = req.user;
+
+  if (!user || !user.emails?.length) {
+    return res.status(400).json({
+      message: "Google authentication failed.....",
+    });
+  }
+
+  const isUserAlreadyExist = await userModel.findOne({
+    $or: [{ email: user.emails[0].value }, { googleId: user.id }],
+  });
+
+  if (isUserAlreadyExist) {
+    const token = jwt.sign(
+      {
+        id: isUserAlreadyExist._id,
+        role: isUserAlreadyExist.role,
+      },
+      config.JWT_SECRET,
+      { expiresIn: "2d" },
+    );
+
+    res.cookie("token", token);
+
+    return res.status(200).json({
+      message: "User logged-In successfully",
+      user: {
+        id: isUserAlreadyExist._id,
+        email: isUserAlreadyExist.email,
+        fullName: isUserAlreadyExist.fullName,
+        role: isUserAlreadyExist.role,
+      },
+    });
+  }
+
+  const newUser = await userModel.create({
+    googleId: user.id,
+    email: user.emails[0].value,
+    fullName: {
+      firstName: user.name.givenName,
+      lastName: user.name.familyName,
+    },
+  });
+
+  const token = jwt.sign(
+    {
+      id: newUser._id,
+      role: newUser.role,
+    },
+    config.JWT_SECRET,
+    { expiresIn: "2d" },
+  );
+
+  res.cookie("token", token);
+
+  return res.status(201).json({
+    message: "User Created successfully",
+    user: {
+      id: newUser._id,
+      email: newUser.email,
+      fullName: newUser.fullName,
+      role: newUser.role,
     },
   });
 }
