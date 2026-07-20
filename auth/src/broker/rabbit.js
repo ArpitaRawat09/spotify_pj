@@ -7,7 +7,7 @@ export async function connect() {
   connection = await amqp.connect(config.RABBITMQ_URI);
   channel = await connection.createChannel();
 
-  console.log("Connected to RabbitMQ");
+  console.log("Connected to RabbitMQ......");
 }
 
 export async function publishToQueue(queueName, data) {
