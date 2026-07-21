@@ -17,3 +17,11 @@ export const registerUserValidationRules = [
   body("fullname.lastName").notEmpty().withMessage("Last name is required"),
   validation,
 ];
+
+export const loginUserValidationRules = [
+  body("email").isEmail().withMessage("Invalid email"),
+  body("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters"),
+  validation,
+];
