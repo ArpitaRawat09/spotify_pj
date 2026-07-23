@@ -9,6 +9,7 @@ export async function registerUser(req, res) {
     email,
     password,
     fullName: { firstName, lastName },
+    role = "user",
   } = req.body;
 
   const isUserAlreadyExist = await userModel.findOne({ email });
@@ -23,6 +24,7 @@ export async function registerUser(req, res) {
     email,
     password: hashedPassword,
     fullName: { firstName, lastName },
+    role,
   });
 
   await user.save();
