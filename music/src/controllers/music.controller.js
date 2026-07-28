@@ -10,13 +10,13 @@ export async function uploadMusic(req, res) {
     const musicKey = await uploadFile(musicFile);
     const coverImageKey = await uploadFile(coverImageFile);
 
-    const music = {
+    const music = await musicModel.create({
       title: req.body.title,
       artist: req.user.fullName.firstName + " " + req.user.fullName.lastName,
       artistId: req.user.id,
       musicKey: musicKey,
       coverImageKey: coverImageKey,
-    };
+    });
     return res
       .status(200)
       .json({ message: "Music uploaded successfully", music });

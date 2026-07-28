@@ -24,7 +24,7 @@ export async function uploadFile(file) {
     Key: key,
   });
 
-  const response = await s3.send(command);
+  const response = await s3Client.send(command);
 
   return key;
 }
@@ -35,6 +35,6 @@ export async function getPresignedUrl(key) {
     Key: key,
   });
 
-  const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
   return url;
 }

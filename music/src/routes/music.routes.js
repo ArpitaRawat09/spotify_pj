@@ -9,6 +9,7 @@ const upload = multer({
 
 const router = express.Router();
 
+// api/music/upload
 router.post(
   "/upload",
   authMiddleware.authArtistMiddleware,
@@ -19,36 +20,43 @@ router.post(
   musicController.uploadMusic,
 );
 
+// api/music
 router.get(
   "/",
   authMiddleware.authUserMiddleware,
   musicController.getAllMusics,
 );
 
+// api/music/get-details/:id
 router.get(
   "/get-details/:id",
   authMiddleware.authUserMiddleware,
   musicController.getMusicById,
 );
 
+// api/music/artist-musics
 router.get(
   "/artist-musics",
   authMiddleware.authArtistMiddleware,
   musicController.getArtistMusics,
 );
 
+// api/music/playlist
 router.post(
   "/playlist",
   authMiddleware.authArtistMiddleware,
   musicController.createPlaylist,
 );
 
+// api/music/playlist
 router.get(
   "/playlist",
   authMiddleware.authUserMiddleware,
   musicController.getPlaylists,
 );
 
+
+// api/music/playlist/:id
 router.get(
   "/playlist/:id",
   authMiddleware.authUserMiddleware,
