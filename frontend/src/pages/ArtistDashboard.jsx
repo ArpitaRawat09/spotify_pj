@@ -1,51 +1,128 @@
-import './ArtistDashboard.css'
-
-const musicItems = [
-  {
-    title: 'Midnight Pulse',
-    meta: 'Single · Indie Pop',
-    status: 'Published',
-    plays: '128K plays',
-    duration: '3:24',
-  },
-  {
-    title: 'Velvet Echo',
-    meta: 'EP · Electronic',
-    status: 'Draft',
-    plays: '15K plays',
-    duration: '4:05',
-  },
-  {
-    title: 'City Lights Live',
-    meta: 'Live Session · Alt Rock',
-    status: 'Published',
-    plays: '92K plays',
-    duration: '5:12',
-  },
-]
-
-const playlists = [
-  {
-    name: 'Late Night Drive',
-    description: 'High-energy tracks built for long rides and neon roads.',
-    tracks: '24 tracks',
-    reach: '18.2K saves',
-  },
-  {
-    name: 'Studio Moodboard',
-    description: 'A personal mix of references, demos, and inspiration.',
-    tracks: '12 tracks',
-    reach: '6.4K saves',
-  },
-  {
-    name: 'Fan Favorites',
-    description: 'Most played songs collected in one clean release hub.',
-    tracks: '31 tracks',
-    reach: '42.8K saves',
-  },
-]
+import "./ArtistDashboard.css";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export default function ArtistDashboard() {
+    const navigate = useNavigate();
+  const [musicItems, setMusicItems] = useState([]);
+
+  const [music, setMusic] = useState([
+    {
+      id: 1,
+      title: "Midnight Pulse",
+      artist: "The Echoes",
+      coverImg:
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+      meta: "Single · Indie Pop",
+      status: "Published",
+      plays: "42.1K plays",
+      duration: "3:12",
+    },
+    {
+      id: 2,
+      title: "Velvet Echo",
+      artist: "The Echoes",
+      coverImg:
+        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80",
+      meta: "EP · Electronic",
+      status: "Published",
+      plays: "18.7K plays",
+      duration: "4:05",
+    },
+    {
+      id: 3,
+      title: "City Lights Live",
+      artist: "The Echoes",
+      coverImg:
+        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80",
+      meta: "Live Session · Alt Rock",
+      status: "Draft",
+      plays: "—",
+      duration: "5:48",
+    },
+  ]);
+
+  const [playlists, setPlaylists] = useState([
+    {
+      title: "Late Night Drive",
+      artist: "The Echoes",
+      music: {
+        title: "Midnight Pulse",
+        artist: "The Echoes",
+        coverImg:
+          "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80",
+        musicUrl: "/music/midnight-pulse.mp3",
+      },
+    },
+    {
+      title: "Studio Moodboard",
+      artist: "Synthwave Collective",
+      music: {
+        title: "Velvet Echo",
+        artist: "Synthwave Collective",
+        coverImg:
+          "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80",
+        musicUrl: "/music/velvet-echo.mp3",
+      },
+    },
+    {
+      title: "Fan Favorites",
+      artist: "The Alt Rockers",
+      music: {
+        title: "City Lights Live",
+        artist: "The Alt Rockers",
+        coverImg:
+          "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80",
+        musicUrl: "/music/city-lights-live.mp3",
+      },
+    },
+  ]);
+
+  useEffect(() => {
+    // Fetch music items from the backend API
+    axios
+      .get("http://localhost:3002/api/music/artist-musics", {
+        withCredentials: true, // Include credentials for authentication
+      })
+      .then((res) => {
+        setMusicItems(
+          res.data.musics.map((music) => ({
+            id: music._id,
+            title: music.title,
+            artist: music.artist,
+            coverImg: music.coverImage,
+            meta: `${music.type} · ${music.genre}`,
+            status: music.status,
+            plays: `${music.plays} plays`,
+            duration: music.duration,
+          })),
+        );
+      });
+
+    // Fetch playlists from the backend API
+    axios
+      .get("http://localhost:3002/api/music/playlist/artist", {
+        withCredentials: true, // Include credentials for authentication
+      })
+      .then((res) => {
+        setPlaylists(
+          res.data.playlists.map((playlist) => ({
+            title: playlist.title,
+            artist: playlist.artist,
+            music: {
+              title: playlist.musics[0].title,
+              artist: playlist.musics[0].artist,
+              coverImg: playlist.musics[0].coverImage,
+              musicUrl: playlist.musics[0].musicUrl,
+            },
+          })),
+        );
+      });
+  }, []);
+
+  const musicMap = Object.fromEntries(music.map((item) => [item.id, item]));
+
   return (
     <div className="artist-dashboard page">
       <header className="artist-dashboard__hero">
@@ -80,20 +157,27 @@ export default function ArtistDashboard() {
             <span className="artist-dashboard__section-label">Music</span>
             <h2>Latest tracks</h2>
           </div>
-          <button className="artist-dashboard__action" type="button">
+          <button className="artist-dashboard__action" type="button" onClick={() => navigate("/artist/dashboard/upload-music")}>
             Upload new track
           </button>
         </div>
 
         <div className="artist-dashboard__grid">
           {musicItems.map((item) => (
-            <article className="artist-dashboard__card" key={item.title}>
+            <article className="artist-dashboard__card" key={item.id}>
+              <div className="artist-dashboard__music-cover-wrap">
+                <img
+                  className="artist-dashboard__music-cover"
+                  src={item.coverImg}
+                  alt={`${item.title} cover art`}
+                />
+              </div>
+
               <div className="artist-dashboard__card-top">
                 <div>
                   <h3>{item.title}</h3>
-                  <p>{item.meta}</p>
+                  <p>{item.artist}</p>
                 </div>
-                <span className="artist-dashboard__badge">{item.status}</span>
               </div>
 
               <div className="artist-dashboard__card-meta">
@@ -118,17 +202,40 @@ export default function ArtistDashboard() {
 
         <div className="artist-dashboard__playlist-grid">
           {playlists.map((playlist) => (
-            <article className="artist-dashboard__playlist-card" key={playlist.name}>
-              <h3>{playlist.name}</h3>
-              <p>{playlist.description}</p>
-              <div className="artist-dashboard__playlist-meta">
-                <span>{playlist.tracks}</span>
-                <span>{playlist.reach}</span>
+            <article
+              className="artist-dashboard__playlist-card"
+              key={playlist.title}
+            >
+              <div className="artist-dashboard__playlist-cover-wrap">
+                <img
+                  className="artist-dashboard__playlist-cover"
+                  src={playlist.music.coverImg}
+                  alt={`${playlist.music.title} cover art`}
+                />
+              </div>
+
+              <div className="artist-dashboard__card-top">
+                <div>
+                  <h3>{playlist.title}</h3>
+                  <p>{playlist.artist}</p>
+                </div>
+              </div>
+
+              <div className="artist-dashboard__card-meta">
+                <span>{playlist.music.title}</span>
+                <span>{playlist.music.artist}</span>
+                <a
+                  href={playlist.music.musicUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open music
+                </a>
               </div>
             </article>
           ))}
         </div>
       </section>
     </div>
-  )
+  );
 }

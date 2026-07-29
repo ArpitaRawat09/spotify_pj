@@ -3,10 +3,18 @@ import musicModel from "../models/music.model.js";
 import playlistModel from "../models/playlist.model.js";
 
 export async function uploadMusic(req, res) {
-  const musicFile = req.files["music"][0];
-  const coverImageFile = req.files["coverImage"][0];
-
   try {
+    // Accept legacy and current form-data keys from different clients.
+    const musicFile = req.files?.["music"]?.[0] || req.files?.["musicFile"]?.[0];
+    const coverImageFile =
+      req.files?.["coverImage"]?.[0] || req.files?.["coverImg"]?.[0];
+
+    if (!musicFile || !coverImageFile) {
+      return res
+        .status(400)
+        .json({ message: "Both music file and cover image are required" });
+    }
+
     const musicKey = await uploadFile(musicFile);
     const coverImageKey = await uploadFile(coverImageFile);
 
@@ -17,6 +25,7 @@ export async function uploadMusic(req, res) {
       musicKey: musicKey,
       coverImageKey: coverImageKey,
     });
+
     return res
       .status(200)
       .json({ message: "Music uploaded successfully", music });
@@ -143,5 +152,19 @@ export async function getPlaylistById(req, res) {
   } catch (error) {
     console.error("Error fetching playlist:", error);
     return res.status(500).json({ message: "Error fetching playlist" });
+  }
+}
+
+export async function getArtistPlaylists(req, res) {
+  try {
+    const playlists = await playlistModel
+      .find({ artistId: req.user.id })
+
+    return res
+      .status(200)
+      .json({ message: "Artist playlists fetched successfully", playlists });
+  } catch (error) {
+    console.error("Error fetching artist playlists:", error);
+    return res.status(500).json({ message: "Error fetching artist playlists" });
   }
 }

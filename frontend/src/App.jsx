@@ -1,6 +1,7 @@
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import ArtistDashboard from './pages/ArtistDashboard.jsx'
+import UploadMusic from './pages/UploadMusic.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import './App.css'
@@ -11,7 +12,7 @@ function App() {
     <div className="app-shell">
       <header className="app-nav">
         <Link to="/">Home</Link>
-        <Link to="/artistdashboard">Artist Dashboard</Link>
+        <Link to="/artist/dashboard">Artist Dashboard</Link>
         <Link to="/register">Register</Link>
         <Link to="/login">Login</Link>
       </header>
@@ -19,7 +20,8 @@ function App() {
       <main className="app-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/artistdashboard" element={<ArtistDashboard />} />
+          <Route path="/artist/dashboard" element={<ArtistDashboard />} />
+          <Route path="/artist/dashboard/upload-music" element={<UploadMusic />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/" replace />} />

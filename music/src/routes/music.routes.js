@@ -15,7 +15,9 @@ router.post(
   authMiddleware.authArtistMiddleware,
   upload.fields([
     { name: "music", maxCount: 1 },
+    { name: "musicFile", maxCount: 1 },
     { name: "coverImage", maxCount: 1 },
+    { name: "coverImg", maxCount: 1 },
   ]),
   musicController.uploadMusic,
 );
@@ -48,13 +50,18 @@ router.post(
   musicController.createPlaylist,
 );
 
+router.get(
+  "/playlist/artist",
+  authMiddleware.authArtistMiddleware,
+  musicController.getArtistPlaylists,
+);
+
 // api/music/playlist
 router.get(
   "/playlist",
   authMiddleware.authUserMiddleware,
   musicController.getPlaylists,
 );
-
 
 // api/music/playlist/:id
 router.get(

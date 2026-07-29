@@ -85,6 +85,10 @@ export async function googleAuthCallback(req, res) {
 
     res.cookie("token", token);
 
+    if (isUserAlreadyExist.role === "artist") {
+      return res.redirect("http://localhost:5173/artist/dashboard");
+    } 
+
     return res.redirect("http://localhost:5173/"); // Redirect to the frontend after successful login
   }
 
