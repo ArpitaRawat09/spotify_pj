@@ -1,5 +1,6 @@
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home.jsx'
+import MusicDetail from './pages/MusicDetail.jsx'
 import ArtistDashboard from './pages/ArtistDashboard.jsx'
 import UploadMusic from './pages/UploadMusic.jsx'
 import Login from './pages/Login.jsx'
@@ -20,6 +21,7 @@ function App() {
       <main className="app-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/music/:id" element={<MusicDetail />} />
           <Route path="/artist/dashboard" element={<ArtistDashboard />} />
           <Route path="/artist/dashboard/upload-music" element={<UploadMusic />} />
           <Route path="/register" element={<Register />} />

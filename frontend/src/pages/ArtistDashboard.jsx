@@ -43,6 +43,9 @@ export default function ArtistDashboard() {
     },
   ]);
 
+  const resolveCoverImage = (item) =>
+    item?.coverImg || item?.coverImageUrl || item?.coverImage || "";
+
   const [playlists, setPlaylists] = useState([
     {
       title: "Late Night Drive",
@@ -91,7 +94,7 @@ export default function ArtistDashboard() {
             id: music._id,
             title: music.title,
             artist: music.artist,
-            coverImg: music.coverImage,
+            coverImg: music.coverImageUrl || music.coverImage,
             meta: `${music.type} · ${music.genre}`,
             status: music.status,
             plays: `${music.plays} plays`,
@@ -113,7 +116,8 @@ export default function ArtistDashboard() {
             music: {
               title: playlist.musics[0].title,
               artist: playlist.musics[0].artist,
-              coverImg: playlist.musics[0].coverImage,
+              coverImg:
+                playlist.musics[0].coverImageUrl || playlist.musics[0].coverImage,
               musicUrl: playlist.musics[0].musicUrl,
             },
           })),
@@ -166,11 +170,17 @@ export default function ArtistDashboard() {
           {musicItems.map((item) => (
             <article className="artist-dashboard__card" key={item.id}>
               <div className="artist-dashboard__music-cover-wrap">
-                <img
-                  className="artist-dashboard__music-cover"
-                  src={item.coverImg}
-                  alt={`${item.title} cover art`}
-                />
+                {resolveCoverImage(item) ? (
+                  <img
+                    className="artist-dashboard__music-cover"
+                    src={resolveCoverImage(item)}
+                    alt={`${item.title} cover art`}
+                  />
+                ) : (
+                  <div className="artist-dashboard__cover-fallback">
+                    No cover
+                  </div>
+                )}
               </div>
 
               <div className="artist-dashboard__card-top">
@@ -178,7 +188,10 @@ export default function ArtistDashboard() {
                   <h3>{item.title}</h3>
                   <p>{item.artist}</p>
                 </div>
+                {item.status && <span className="artist-dashboard__badge">{item.status}</span>}
               </div>
+
+              {item.meta && <p className="artist-dashboard__card-subtext">{item.meta}</p>}
 
               <div className="artist-dashboard__card-meta">
                 <span>{item.plays}</span>
@@ -207,31 +220,51 @@ export default function ArtistDashboard() {
               key={playlist.title}
             >
               <div className="artist-dashboard__playlist-cover-wrap">
-                <img
-                  className="artist-dashboard__playlist-cover"
-                  src={playlist.music.coverImg}
-                  alt={`${playlist.music.title} cover art`}
-                />
+                {resolveCoverImage(playlist.music) ? (
+                  <img
+                    className="artist-dashboard__playlist-cover"
+                    src={resolveCoverImage(playlist.music)}
+                    alt={`${playlist.music.title} cover art`}
+                  />
+                ) : (
+                  <div className="artist-dashboard__cover-fallback">
+                    No cover
+                  </div>
+                )}
               </div>
 
-              <div className="artist-dashboard__card-top">
-                <div>
-                  <h3>{playlist.title}</h3>
-                  <p>{playlist.artist}</p>
+              <div className="artist-dashboard__playlist-content">
+                <div className="artist-dashboard__card-top">
+                  <div>
+                    <span className="artist-dashboard__playlist-label">Playlist collection</span>
+                    <h3>{playlist.title}</h3>
+                    <p>{playlist.artist}</p>
+                  </div>
+                </div>
+
+                <div className="artist-dashboard__playlist-track-card">
+                  <div>
+                    <span className="artist-dashboard__playlist-kicker">Featured track</span>
+                    <h4>{playlist.music.title}</h4>
+                    <p>{playlist.music.artist}</p>
+                  </div>
+
+                  <div className="artist-dashboard__playlist-meta">
+                    <span>{playlist.music.musicUrl ? "Playable" : "Unavailable"}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="artist-dashboard__card-meta">
-                <span>{playlist.music.title}</span>
-                <span>{playlist.music.artist}</span>
+              {playlist.music.musicUrl && (
                 <a
+                  className="artist-dashboard__playlist-link"
                   href={playlist.music.musicUrl}
                   target="_blank"
                   rel="noreferrer"
                 >
                   Open music
                 </a>
-              </div>
+              )}
             </article>
           ))}
         </div>
