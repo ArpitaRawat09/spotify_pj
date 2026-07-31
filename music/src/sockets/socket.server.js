@@ -7,7 +7,8 @@ function initSocketServer(server) {
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:5173",
-      methods: true,
+      methods: ["GET", "POST"],
+      credentials: true, // <-- required since you're reading cookies
     },
   });
 
@@ -18,7 +19,7 @@ function initSocketServer(server) {
       if (!token) {
         return next(new Error("Authentication error"));
       }
-      const decoded = jwt.verify(token, config.jwtSecret);
+      const decoded = jwt.verify(token, config.JWT_SECRET);
       socket.user = decoded;
       next();
     } catch (err) {

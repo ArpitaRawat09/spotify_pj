@@ -1,14 +1,24 @@
-import { Link, Navigate, Route, Routes } from 'react-router-dom'
-import Home from './pages/Home.jsx'
-import MusicDetail from './pages/MusicDetail.jsx'
-import ArtistDashboard from './pages/ArtistDashboard.jsx'
-import UploadMusic from './pages/UploadMusic.jsx'
-import Login from './pages/Login.jsx'
-import Register from './pages/Register.jsx'
-import './App.css'
-import './theme.css'
+import { Link, Navigate, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import MusicDetail from "./pages/MusicDetail.jsx";
+import ArtistDashboard from "./pages/ArtistDashboard.jsx";
+import UploadMusic from "./pages/UploadMusic.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
+import "./App.css";
+import "./theme.css";
 
 function App() {
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:3002", {
+      withCredentials: true,
+    });
+  }, []);
+
   return (
     <div className="app-shell">
       <header className="app-nav">
@@ -23,14 +33,17 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/music/:id" element={<MusicDetail />} />
           <Route path="/artist/dashboard" element={<ArtistDashboard />} />
-          <Route path="/artist/dashboard/upload-music" element={<UploadMusic />} />
+          <Route
+            path="/artist/dashboard/upload-music"
+            element={<UploadMusic />}
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
