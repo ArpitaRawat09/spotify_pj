@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+export default function Home({ socket }) {
   const navigate = useNavigate();
   const [musics, setMusics] = useState([
     {
@@ -140,7 +140,10 @@ export default function Home() {
               <article
                 className="home__music-card"
                 key={music.id}
-                onClick={() => navigate(`/music/${music.id}`)}
+                onClick={() => {
+                  socket?.emit("play", { musicId: music.id });
+                  navigate(`/music/${music.id}`);
+                }}
               >
                 <div className="home__image-wrap">
                   {music.coverImageUrl ? (

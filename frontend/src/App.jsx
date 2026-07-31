@@ -17,6 +17,17 @@ function App() {
     const newSocket = io("http://localhost:3002", {
       withCredentials: true,
     });
+
+    setSocket(newSocket);
+
+    // listen for the "play" event from the server
+    newSocket.on("play", (data) => {
+      const musicId = data.musicId;
+
+      window.location.href = `/music/${musicId}`;
+    })
+
+    
   }, []);
 
   return (
@@ -30,7 +41,7 @@ function App() {
 
       <main className="app-content">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home socket={socket} />} />
           <Route path="/music/:id" element={<MusicDetail />} />
           <Route path="/artist/dashboard" element={<ArtistDashboard />} />
           <Route

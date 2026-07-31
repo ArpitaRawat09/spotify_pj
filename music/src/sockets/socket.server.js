@@ -28,6 +28,7 @@ function initSocketServer(server) {
   });
 
   io.on("connection", (socket) => {
+    console.log(`User connected: ${socket.user.id}`);
     socket.join(socket.user.id);
 
     socket.on("play", (data) => {

@@ -22,7 +22,7 @@ export default function MusicDetail() {
   const [music, setMusic] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(true)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(80)
@@ -136,6 +136,7 @@ export default function MusicDetail() {
         ref={audioRef}
         src={music?.musicUrl}
         preload="metadata"
+        autoPlay={true}
         onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => {
           setDuration(event.currentTarget.duration || 0)
