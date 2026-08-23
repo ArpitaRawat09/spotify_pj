@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || "http://localhost:3000";
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || "https://spotify-pj.onrender.com";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function Register() {
           },
           email: formData.email,
           password: formData.password,
-          userType: formData.userType,
+          role: formData.userType,
         },
         {
           withCredentials: true, // Include credentials in the request

@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || "http://localhost:3000";
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || "https://spotify-pj.onrender.com";
 
 export default function Login() {
   const navigate = useNavigate();
