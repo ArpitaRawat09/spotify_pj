@@ -3,6 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || "http://localhost:3000";
+
 export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -29,7 +31,7 @@ export default function Register() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
+        `${AUTH_API_URL}/api/auth/register`,
         {
           fullName: {
             firstName: formData.firstName,
@@ -166,7 +168,7 @@ export default function Register() {
 
         <button
           onClick={() => {
-            window.location.href = "http://localhost:3000/api/auth/google";
+            window.location.href = `${AUTH_API_URL}/api/auth/google`;
           }}
           type="button"
           className="google-button"

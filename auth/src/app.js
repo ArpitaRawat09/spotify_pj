@@ -11,7 +11,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
 }));
 app.use(morgan("dev"));
@@ -27,7 +27,7 @@ passport.use(
     {
       clientID: config.CLIENT_ID,
       clientSecret: config.CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL: `${process.env.AUTH_PUBLIC_URL || "http://localhost:3000"}/api/auth/google/callback`,
     },
     (accessToken, refreshToken, profile, done) => {
       // Here, you would typically find or create a user in your database

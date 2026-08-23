@@ -3,6 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || "http://localhost:3000";
+
 export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -26,7 +28,7 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
+        `${AUTH_API_URL}/api/auth/login`,
         {
           email: formData.email,
           password: formData.password,
@@ -98,7 +100,7 @@ export default function Login() {
         <div className="auth-divider">or</div>
 
         <button onClick={() => {
-            window.location.href = "http://localhost:3000/api/auth/google";
+            window.location.href = `${AUTH_API_URL}/api/auth/google`;
         }} type="button" className="google-button">
           <span className="google-icon" aria-hidden="true">
             G

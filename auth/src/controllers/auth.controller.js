@@ -4,6 +4,12 @@ import jwt from "jsonwebtoken";
 import config from "../config/config.js";
 import { publishToQueue } from "../broker/rabbit.js";
 
+const authCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
+
 export async function registerUser(req, res) {
   const {
     email,
@@ -15,7 +21,7 @@ export async function registerUser(req, res) {
   const isUserAlreadyExist = await userModel.findOne({ email });
 
   if (isUserAlreadyExist) {
-    return (res, status(400).json({ message: "User already exists" }));
+    return res.status(400).json({ message: "User already exists" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -46,7 +52,7 @@ export async function registerUser(req, res) {
     role: user.role,
   });
 
-  res.cookie("token", token);
+  res.cookie("token", token, authCookieOptions);
 
   res.status(201).json({
     message: "User registered successfully",
@@ -83,13 +89,13 @@ export async function googleAuthCallback(req, res) {
       { expiresIn: "2d" },
     );
 
-    res.cookie("token", token);
+    res.cookie("token", token, authCookieOptions);
 
     if (isUserAlreadyExist.role === "artist") {
-      return res.redirect("http://localhost:5173/artist/dashboard");
+      return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/artist/dashboard`);
     } 
 
-    return res.redirect("http://localhost:5173/"); // Redirect to the frontend after successful login
+    return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/`);
   }
 
   const newUser = await userModel.create({
@@ -118,9 +124,9 @@ export async function googleAuthCallback(req, res) {
     { expiresIn: "2d" },
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, authCookieOptions);
 
-  return res.redirect("http://localhost:5173/"); // Redirect to the frontend after successful login
+  return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/`);
 }
 
 export async function loginUser(req, res) {
@@ -148,7 +154,7 @@ export async function loginUser(req, res) {
     { expiresIn: "2d" },
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, authCookieOptions);
 
   res.status(200).json({
     message: "User logged-In successfully",
